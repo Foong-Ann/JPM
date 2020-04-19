@@ -15,12 +15,8 @@ import threading
 import http.server
 from socketserver   import ThreadingMixIn
 
-################################################################################
-#
 # Config
-
 # Sim params
-
 REALTIME    = True
 SIM_LENGTH  = timedelta(days = 365 * 5)
 MARKET_OPEN = datetime.today().replace(hour = 0, minute = 30, second = 0)
@@ -32,13 +28,9 @@ PX   = (60.0,  150.0, 1)
 FREQ = (12,    36,   50)
 
 # Trades
-
 OVERLAP = 4
 
-################################################################################
-#
 # Test Data
-
 def bwalk(min, max, std):
     """ Generates a bounded random walk. """
     rng = max - min
@@ -64,12 +56,8 @@ def orders(hist):
         order = round(normalvariate(px + (spd / d), spd / OVERLAP), 2)
         size  = int(abs(normalvariate(0, 100)))
         yield t, stock, side, order, size
-
-
-################################################################################
-#
+        
 # Order Book
-
 def add_book(book, order, size, _age = 10):
     """ Add a new order and size to a book, and age the rest of the book. """
     yield order, size, _age
@@ -117,10 +105,7 @@ def order_book(orders, book, stock_name):
         bids, asks = clear_book(**book)
         yield t, bids, asks
 
-################################################################################
-#
 # Test Data Persistence
-
 def generate_csv():
     """ Generate a CSV of order history. """
     with open('test.csv', 'wb') as f:
@@ -136,10 +121,7 @@ def read_csv():
         for time, stock, side, order, size in csv.reader(f):
             yield dateutil.parser.parse(time), stock, side, float(order), int(size)
 
-################################################################################
-#
 # Server
-
 class ThreadedHTTPServer(ThreadingMixIn, http.server.HTTPServer):
     """ Boilerplate class for a multithreaded HTTP Server, with working
         shutdown.
@@ -203,10 +185,7 @@ def run(routes, host = '0.0.0.0', port = 8080):
     server.start()
     server.waitForThread()
 
-################################################################################
-#
 # App
-
 ops = {
     'buy':  operator.le,
     'sell': operator.ge,
@@ -289,10 +268,7 @@ class App(object):
             }
         }]
 
-################################################################################
-#
 # Main
-
 if __name__ == '__main__':
     if not os.path.isfile('test.csv'):
         print ("No data found, generating...")
